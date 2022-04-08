@@ -24,7 +24,6 @@ def hitbox_detection(x,y):
     im = Image.open('levels\Static_Hitbox\level1.png')
     rgb_im = im.convert('RGB')
     r, g, b = rgb_im.getpixel((x, y))
-    print(r,g,b)
     if r == 255 and g == 253 and b == 253:
         return True
     elif r == 0 and g == 0 and b == 0:
@@ -32,7 +31,6 @@ def hitbox_detection(x,y):
 
 
 
-print(hitbox_detection(640,640))
 
 
 

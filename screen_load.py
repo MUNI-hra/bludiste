@@ -8,20 +8,25 @@ import math
 import PIL
 import os
 from PIL import Image
+import player
 
 
 def load_level(level,gameDisplay):
-    if level == 1:
+    global im
+    if level == "Level1":
+        im = Image.open('levels\Static_Hitbox\level1.png')
         image_level = pygame.image.load(os.path.join('levels\Images\level1.png'))
         gameDisplay.blit(image_level, (0,0))
-    if level == 2:
-        image_level = pygame.image.load(os.path.join('levels\Images\level1.png'))
+        print("level1")
+    elif level == "Error":
+        im = Image.open('levels\Static_Hitbox\Error.png')
+        image_level = pygame.image.load(os.path.join('levels\Images\Error.png'))
         gameDisplay.blit(image_level, (0,0))
+        print("error")
 
 def hitbox_detection(x,y):
     x = x/16 # tahle funkce vrát true pokud se hráč může posunout na zadanou pozici a false pokud ne
     y = y/16
-    im = Image.open('levels\Static_Hitbox\level1.png')
     rgb_im = im.convert('RGB')
     r, g, b = rgb_im.getpixel((x, y))
     if r == 255 and g == 253 and b == 253:

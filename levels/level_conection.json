@@ -1,7 +1,7 @@
 {
     "Level1": [
         {
-            "Left": "Level2"
+            "Left": "Error"
         },
         {
             "Up": "Error"
@@ -11,6 +11,33 @@
         },
         {
             "Right": "Error"
+        },
+        {
+            "X": "100"
+        },
+        {
+            "Y": "100"
+        }
+    ],
+
+    "Error": [
+        {
+            "Left": "Error"
+        },
+        {
+            "Up": "Error"
+        },
+        {
+            "Down": "Error"
+        },
+        {
+            "Right": "Error"
+        },
+        {
+            "X": "100"
+        },
+        {
+            "Y": "100"
         }
     ]
 

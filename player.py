@@ -23,18 +23,18 @@ class Person:
 
 
     def end_of_word(self, max_x, max_y):  # border of window, can be done via constant
-        if self.x == max_x:  # right conner
-            return self.x, self.y
-        if self.x == 0:  # left conner
-            return self.x, self.y
-        if self.y == max_y:  # down conner
-            return self.x, self.y
-        if self.y == 0:  # up conner
-            return self.x, self.y
+        if self.x > max_x:  # right conner
+            return "Right"
+        if self.x < 16:  # left conner
+            return "Left"
+        if self.y > max_y:  # down conner
+            return "Down"
+        if self.y < 16:  # up conner
+            return "Up"
 
     def render(self,texture,gameDisplay,direction):
         if direction == False:
             gameDisplay.blit(texture, (self.x,self.y))
             
         if direction == True:
-            gameDisplay.blit(pygame.transform.flip(texture, True, False), (self.x+8, self.y))
+            gameDisplay.blit(pygame.transform.flip(texture, True, False), (self.x, self.y))

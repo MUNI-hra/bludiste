@@ -32,5 +32,9 @@ class Person:
         if self.y == 0:  # up conner
             return self.x, self.y
 
-    def render(self,texture,gameDisplay):
-        gameDisplay.blit(texture, (self.x,self.y))
+    def render(self,texture,gameDisplay,direction):
+        if direction == False:
+            gameDisplay.blit(texture, (self.x,self.y))
+            
+        if direction == True:
+            gameDisplay.blit(pygame.transform.flip(texture, True, False), (self.x+8, self.y))

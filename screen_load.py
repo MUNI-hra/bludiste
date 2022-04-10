@@ -11,18 +11,16 @@ from PIL import Image
 import player
 
 
-def load_level(level,gameDisplay):
+def load_level(level,gameDisplay): # rendruje level
     global im
     if level == "Level1":
         im = Image.open('levels\Static_Hitbox\level1.png')
         image_level = pygame.image.load(os.path.join('levels\Images\level1.png'))
         gameDisplay.blit(image_level, (0,0))
-        print("level1")
     elif level == "Error":
         im = Image.open('levels\Static_Hitbox\Error.png')
         image_level = pygame.image.load(os.path.join('levels\Images\Error.png'))
         gameDisplay.blit(image_level, (0,0))
-        print("error")
 
 def hitbox_detection(x,y):
     x = x/16 # tahle funkce vrát true pokud se hráč může posunout na zadanou pozici a false pokud ne

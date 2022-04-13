@@ -10,5 +10,7 @@ pygame gui -
   pip install pygame_gui
 wheel - (knihovna kterou potřebuje pygame gui)
   pip install wheel
+Numpy -
+  pip install numpy
 
 

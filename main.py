@@ -26,6 +26,7 @@ walking = False # je true pokud se hráč pohybuje
 clock = pygame.time.Clock() # časovač na ovládání fps
 game_started = False # nastaví se na true pokud nejsem v menu
 current_level = "Level1" # level na kterým se začíná
+loaded_level =None
 
 pygame.init() #init hry
 DISPLAY_SURFACE = pygame.display.set_mode((screen_X, screen_Y))  # need this numbers as variables or constants
@@ -41,9 +42,10 @@ start_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((screen_X/
 quit_button =pygame_gui.elements.UIButton(relative_rect=pygame.Rect((screen_X/2-Menu_Button_Size_X/2, screen_Y/2-Menu_Button_Size_Y/2+Menu_Button_Spacing), (Menu_Button_Size_X, Menu_Button_Size_Y)), text='Quit', manager=manager)
 
 
+screen_load.load_level("Level1",DISPLAY_SURFACE)
 
 while True: # tady začíná hlavní herní loop
-    time_delta = clock.tick(200)/1000 # časovač pro menu elementy
+    time_delta = clock.tick()/1000 # časovač pro menu elementy
     for event in pygame.event.get(): #ovládání eventů
         if game_started == True:    # tento kód se spustí jen když už hrajete hru (když v menu vyberete že chcete hrát)
             key_pressed_is = pygame.key.get_pressed() #kód na ovládání hráče
@@ -98,26 +100,25 @@ while True: # tady začíná hlavní herní loop
                 next_level = data[current_level]
                 if player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Left":
                     screen_load.load_level(next_level[0]["Left"],DISPLAY_SURFACE)
-                    current_level = next_level[0]["Left"]
                     player.Person.set_x(character,int(data[current_level][0]["X"]))
                     player.Person.set_y(character,int(data[current_level][0]["Y"]))
+                    current_level = next_level[0]["Left"]
                 elif player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Up":
                     screen_load.load_level(next_level[1]["Up"],DISPLAY_SURFACE)
-                    current_level = next_level[1]["Up"]
                     player.Person.set_x(character,int(data[current_level][1]["X"]))
                     player.Person.set_y(character,int(data[current_level][1]["Y"]))
+                    current_level = next_level[1]["Up"]
                 elif player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Down":
                     screen_load.load_level(next_level[2]["Down"],DISPLAY_SURFACE)
-                    current_level = next_level[2]["Down"]
                     player.Person.set_x(character,int(data[current_level][2]["X"]))
                     player.Person.set_y(character,int(data[current_level][2]["Y"]))
+                    current_level = next_level[2]["Down"]
                 elif player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Right":
                     screen_load.load_level(next_level[3]["Right"],DISPLAY_SURFACE)
-                    current_level = next_level[3]["Right"]
                     player.Person.set_x(character,int(data[current_level][3]["X"]))
                     player.Person.set_y(character,int(data[current_level][3]["Y"]))
+                    current_level = next_level[3]["Right"]
                 
-                    
 
         if event.type == QUIT: # vypínání hry
             pygame.quit()
@@ -134,7 +135,10 @@ while True: # tady začíná hlavní herní loop
                     sys.exit()
 
     if game_started == True: # tento kód se spustí jen když už hrajete hru (když v menu vyberete že chcete hrát)
-        screen_load.load_level(current_level,DISPLAY_SURFACE) # načte texturu levelu
+        if loaded_level != current_level:
+            loaded_level = current_level
+            screen_load.load_level(current_level,DISPLAY_SURFACE) # načte texturu levelu
+        screen_load.reload_level(DISPLAY_SURFACE)
         animation_frame = player.Person.render(character,DISPLAY_SURFACE,direction,walking,animation_frame) # načte texturu hráče
 
 
@@ -145,7 +149,6 @@ while True: # tady začíná hlavní herní loop
         DISPLAY_SURFACE.blit(image,(0,0))
         manager.draw_ui(DISPLAY_SURFACE)
 
-    screen_load.Render_Text(str(int(clock.get_fps()+40)) + " fps",(255,255,255),(10,10),DISPLAY_SURFACE)
-    
+    screen_load.Render_Text(str(int(clock.get_fps())) + " fps",(255,255,255),(10,10),DISPLAY_SURFACE)
     pygame.display.update() # update obrazovky
     

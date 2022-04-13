@@ -18,13 +18,17 @@ class Person:
     def __init__(self):
         self.x = 0
         self.y = 0
+        self.last_x = 0
+        self.last_y = 0
 
     def move_y(self, ya):
         if screen_load.hitbox_detection(self.x, (self.y+ya)):  # is there a wall?
+            self.last_y = self.y
             self.y += ya  # moving on y
 
     def move_x(self, xa):
         if screen_load.hitbox_detection((self.x + xa), self.y):  # is there a wall?
+            self.last_x = self.x
             self.x += xa  # moving on x
     
     def set_x(self, xpos): # nastaví x na pozici v absolutních souřadnicích

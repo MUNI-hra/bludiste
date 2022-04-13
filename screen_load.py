@@ -13,17 +13,20 @@ import player
 
 def load_level(level,gameDisplay): # rendruje level
     global im
+    global image_level
     im = Image.open('levels\Static_Hitbox' + "\\" + level + ".png" )
     image_level = pygame.image.load(os.path.join('levels\Images' + "\\" + level + ".png"))
     gameDisplay.blit(image_level, (0,0))
-    
+
+def reload_level(gameDisplay):
+    gameDisplay.blit(image_level, (0,0))
 
 def hitbox_detection(x,y):
     x = x/16 # tahle funkce vrát true pokud se hráč může posunout na zadanou pozici a false pokud ne
     y = y/16
     rgb_im = im.convert('RGB')
     r, g, b = rgb_im.getpixel((x, y))
-    if r == 255 and g == 253 and b == 253:
+    if r == 255 and g == 255 and b == 255:
         return True
     elif r == 0 and g == 0 and b == 0:
         return False

@@ -4,6 +4,15 @@ from pygame.locals import *
 import os
 from PIL import Image,ImageOps
 
+SIZE_OF_SCREEN_BORDER = 16 # konstanta okraje obrazovky
+MAX_ANIMATION_FRAME = 10 # kolik snímků má animace (1 snímek je 1/20 sekundy)
+END_OF_FRAME = 5
+RIGHT = 0
+UP = 1
+LEFT = 2
+DOWN = 3
+SIZE_OF_CHARACTER = 32
+
 
 class Person:
     def __init__(self):
@@ -28,53 +37,65 @@ class Person:
     def end_of_word(self, max_x, max_y):  # border of window, can be done via constant
         if self.x > max_x:  # right conner
             return "Right"
-        if self.x < 16:  # left conner
+        if self.x < SIZE_OF_SCREEN_BORDER:  # left conner
             return "Left"
         if self.y > max_y:  # down conner
             return "Down"
-        if self.y < 16:  # up conner
+        if self.y < SIZE_OF_SCREEN_BORDER:  # up conner
             return "Up"
 
     def render(self,surface,direction,walking,animation_frame): # rendruje hráče 
-        animation_frame +=2
-        texture = pygame.image.load(os.path.join('Graphics\Player\Front.png'))
-        if animation_frame == 20:
+        animation_frame +=1
+        texture = pygame.image.load(os.path.join('Graphics\Player\Front.png')) #basic texture
+        if animation_frame == MAX_ANIMATION_FRAME:
             animation_frame = 0
-        if direction == 0:
-            if walking == True:
-                if animation_frame <= 10:
+
+
+
+        if direction == RIGHT: # rendering player if he is facing right 
+            if walking == True: # rendering animation of him walking
+                if animation_frame <= END_OF_FRAME:
                     texture = pygame.transform.flip(pygame.image.load(os.path.join('Graphics\Player\side_walk.png')), True, False)
-                if animation_frame > 10:
+                if animation_frame > END_OF_FRAME:
                     texture = pygame.transform.flip(pygame.image.load(os.path.join('Graphics\Player\side.png')), True, False)
-            if walking == False:
+            if walking == False: #rendering player if he is not moving
                 texture = pygame.transform.flip(pygame.image.load(os.path.join('Graphics\Player\side.png')), True, False)
 
-        elif direction == 1:
-            if walking == True:
-                if animation_frame <= 10:
+
+
+        elif direction == UP: # rendering player if he is facing up
+            if walking == True: # rendering animation of him walking
+                if animation_frame <= END_OF_FRAME:
                     texture = pygame.image.load(os.path.join('Graphics\Player\Back_walk.png'))
-                if animation_frame > 10:
+                if animation_frame > END_OF_FRAME:
                     texture = pygame.transform.flip(pygame.image.load(os.path.join('Graphics\Player\Back_walk.png')), True, False)
             if walking == False:
                 texture = pygame.transform.flip(pygame.image.load(os.path.join('Graphics\Player\Back.png')), True, False)
 
-        elif direction == 2:
-            if walking == True:
-                if animation_frame <= 10:
+
+
+        elif direction == LEFT: # rendering player if he is facing left
+            if walking == True: # rendering animation of him walking
+                if animation_frame <= END_OF_FRAME:
                     texture = pygame.image.load(os.path.join('Graphics\Player\side_walk.png'))
-                if animation_frame > 10:
+                if animation_frame > END_OF_FRAME:
                     texture = pygame.image.load(os.path.join('Graphics\Player\side.png'))
-            if walking == False:
+            if walking == False: #rendering player if he is not moving
                 texture = pygame.image.load(os.path.join('Graphics\Player\side.png'))
 
-        elif direction == 3:
-            if walking == True:
-                if animation_frame <= 10:
+
+
+        elif direction == DOWN: # rendering player if he is facing down 
+            if walking == True: # rendering animation of him walking
+                if animation_frame <= END_OF_FRAME:
                     texture = pygame.transform.flip(pygame.image.load(os.path.join('Graphics\Player\Front_walk.png')), True, False)
-                if animation_frame > 10:
+                if animation_frame > END_OF_FRAME:
                     texture = pygame.image.load(os.path.join('Graphics\Player\Front_walk.png'))
-            if walking == False:
+            if walking == False: #rendering player if he is not moving
                 texture = pygame.image.load(os.path.join('Graphics\Player\Front.png'))
 
-        surface.blit(pygame.transform.scale(texture,(32,32)), (self.x,self.y))        
+
+
+
+        surface.blit(pygame.transform.scale(texture,(SIZE_OF_CHARACTER,SIZE_OF_CHARACTER)), (self.x,self.y))        
         return animation_frame

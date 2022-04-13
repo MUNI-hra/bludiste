@@ -13,14 +13,10 @@ import player
 
 def load_level(level,gameDisplay): # rendruje level
     global im
-    if level == "Level1":
-        im = Image.open('levels\Static_Hitbox\level1.png')
-        image_level = pygame.image.load(os.path.join('levels\Images\level1.png'))
-        gameDisplay.blit(image_level, (0,0))
-    elif level == "Error":
-        im = Image.open('levels\Static_Hitbox\Error.png')
-        image_level = pygame.image.load(os.path.join('levels\Images\Error.png'))
-        gameDisplay.blit(image_level, (0,0))
+    im = Image.open('levels\Static_Hitbox' + "\\" + level + ".png" )
+    image_level = pygame.image.load(os.path.join('levels\Images' + "\\" + level + ".png"))
+    gameDisplay.blit(image_level, (0,0))
+    
 
 def hitbox_detection(x,y):
     x = x/16 # tahle funkce vrát true pokud se hráč může posunout na zadanou pozici a false pokud ne
@@ -32,6 +28,10 @@ def hitbox_detection(x,y):
     elif r == 0 and g == 0 and b == 0:
         return False
 
+def Render_Text(what, color, where, window):
+    font = pygame.font.Font('Graphics/Fonts/Snes.ttf', 30)
+    text = font.render(what, 1, pygame.Color(color))
+    window.blit(text, where)
 
 
 

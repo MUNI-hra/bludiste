@@ -5,13 +5,15 @@ import os
 from PIL import Image,ImageOps
 
 SIZE_OF_SCREEN_BORDER = 16 # konstanta okraje obrazovky
-MAX_ANIMATION_FRAME = 10 # kolik snímků má animace (1 snímek je 1/20 sekundy)
-END_OF_FRAME = 5
+MAX_ANIMATION_FRAME = 100 # kolik snímků má animace (1 snímek je 1/20 sekundy)
+END_OF_FRAME = 50
 RIGHT = 0
 UP = 1
 LEFT = 2
 DOWN = 3
 SIZE_OF_CHARACTER = 32
+CLEAN_OFFSET = 10
+CLEAN_SIZE = 50
 
 
 class Person:
@@ -33,9 +35,11 @@ class Person:
     
     def set_x(self, xpos): # nastaví x na pozici v absolutních souřadnicích
         self.x = xpos
+        self.last_x = xpos
     
     def set_y(self, ypos): # nastaví y na pozici v absolutních souřadnicích
         self.y = ypos
+        self.last_y = ypos
 
 
     def end_of_word(self, max_x, max_y):  # border of window, can be done via constant
@@ -47,13 +51,17 @@ class Person:
             return "Down"
         if self.y < SIZE_OF_SCREEN_BORDER:  # up conner
             return "Up"
+        
+    def clear(self,surface,image):
+        surface.blit(image, (self.last_x-CLEAN_OFFSET,self.last_y-CLEAN_OFFSET),(self.last_x-CLEAN_OFFSET,self.last_y-CLEAN_OFFSET,CLEAN_SIZE,CLEAN_SIZE))
 
-    def render(self,surface,direction,walking,animation_frame): # rendruje hráče 
+
+    def render(self,surface,direction,walking,animation_frame,image): # rendruje hráče 
+        Person.clear(self,surface,image)
         animation_frame +=1
         texture = pygame.image.load(os.path.join('Graphics\Player\Front.png')) #basic texture
         if animation_frame == MAX_ANIMATION_FRAME:
             animation_frame = 0
-
 
 
         if direction == RIGHT: # rendering player if he is facing right 

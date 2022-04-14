@@ -5,7 +5,6 @@ from re import X
 import pygame, sys
 from pygame.locals import *
 import math
-import PIL
 import os
 from PIL import Image
 import player
@@ -17,6 +16,7 @@ def load_level(level,gameDisplay): # rendruje level
     im = Image.open('levels\Static_Hitbox' + "\\" + level + ".png" )
     image_level = pygame.image.load(os.path.join('levels\Images' + "\\" + level + ".png"))
     gameDisplay.blit(image_level, (0,0))
+    return image_level
 
 def reload_level(gameDisplay):
     gameDisplay.blit(image_level, (0,0))
@@ -35,6 +35,9 @@ def Render_Text(what, color, where, window):
     font = pygame.font.Font('Graphics/Fonts/Snes.ttf', 30)
     text = font.render(what, 1, pygame.Color(color))
     window.blit(text, where)
+
+def clear_bit(surface,image,xa,ya,xb,yb):
+    surface.blit(image, (xa,ya),(xa,ya,xb,yb))
 
 
 

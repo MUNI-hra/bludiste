@@ -8,13 +8,19 @@ import pygame_gui
 import math
 import json
 
+UP = 1
+RIGHT = 0
+LEFT = 2
+DOWN = 3
+
+
 
 animation_frame = 0
 
 screen_X = 1280 #velikosti obrazovky
 screen_Y = 960
 
-move_speed = 4 #rychlost chůze hráče v pixelech za krok (default je 3)
+move_speed = 0.75 #rychlost chůze hráče v pixelech za krok (default je 3)
 two_sqrt = math.sqrt(2)
 
 Menu_Button_Size_X = 250 #rozměry a rozložení tlačítek v menu
@@ -45,87 +51,11 @@ quit_button =pygame_gui.elements.UIButton(relative_rect=pygame.Rect((screen_X/2-
 screen_load.load_level("Level1",DISPLAY_SURFACE)
 
 while True: # tady začíná hlavní herní loop
-    time_delta = clock.tick()/1000 # časovač pro menu elementy
+    time_delta = clock.tick(200)/1000 # časovač pro menu elementy
     for event in pygame.event.get(): #ovládání eventů
-        if game_started == True:    # tento kód se spustí jen když už hrajete hru (když v menu vyberete že chcete hrát)
-            key_pressed_is = pygame.key.get_pressed() #kód na ovládání hráče
-                # první 4 if jsou na úhlopříčky a ty další 4 na rovný směry
-            diagonal_speed = (3*two_sqrt)/2
-            if key_pressed_is[K_w] and key_pressed_is[K_d] and not key_pressed_is[K_a] and not key_pressed_is[K_s]:
-                player.Person.move_y(character,-(diagonal_speed))
-                player.Person.move_x(character,(diagonal_speed))
-                direction = 0
-                walking = True
-              
-            elif not key_pressed_is[K_w] and key_pressed_is[K_d] and not key_pressed_is[K_a] and key_pressed_is[K_s]:
-                player.Person.move_y(character,(diagonal_speed))
-                player.Person.move_x(character,(diagonal_speed))
-                direction = 0
-                walking = True
-              
-            elif not key_pressed_is[K_w] and not key_pressed_is[K_d] and key_pressed_is[K_a] and key_pressed_is[K_s]:
-                player.Person.move_y(character,(diagonal_speed))
-                player.Person.move_x(character,-(diagonal_speed))
-                direction = 2
-                walking = True
-              
-            elif key_pressed_is[K_w] and not key_pressed_is[K_d] and key_pressed_is[K_a] and not key_pressed_is[K_s]:
-                player.Person.move_y(character,-(diagonal_speed))
-                player.Person.move_x(character,-(diagonal_speed))
-                direction = 2
-                walking = True
-              
-            elif key_pressed_is[K_w]:
-                player.Person.move_y(character,-move_speed)
-                walking = True
-                direction = 1
-            elif key_pressed_is[K_a]:
-                player.Person.move_x(character,-move_speed)
-                walking = True
-                direction = 2
-            elif key_pressed_is[K_s]:
-                player.Person.move_y(character,move_speed)
-                walking = True
-                direction = 3
-            elif key_pressed_is[K_d]:
-                player.Person.move_x(character,move_speed)
-                walking = True
-                direction = 0
-            elif not key_pressed_is[K_d] and not key_pressed_is[K_a] and not key_pressed_is[K_s] and not key_pressed_is[K_w]:
-                walking = False
-
-            if player.Person.end_of_word(character,screen_X-16,screen_Y-16) != None: # ovládání screen wrappingu
-                js = open("levels\level_conection.json")
-                data = json.load(js)
-                next_level = data[current_level]
-                if player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Left":
-                    screen_load.load_level(next_level[0]["Left"],DISPLAY_SURFACE)
-                    player.Person.set_x(character,int(data[current_level][0]["X"]))
-                    player.Person.set_y(character,int(data[current_level][0]["Y"]))
-                    current_level = next_level[0]["Left"]
-                elif player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Up":
-                    screen_load.load_level(next_level[1]["Up"],DISPLAY_SURFACE)
-                    player.Person.set_x(character,int(data[current_level][1]["X"]))
-                    player.Person.set_y(character,int(data[current_level][1]["Y"]))
-                    current_level = next_level[1]["Up"]
-                elif player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Down":
-                    screen_load.load_level(next_level[2]["Down"],DISPLAY_SURFACE)
-                    player.Person.set_x(character,int(data[current_level][2]["X"]))
-                    player.Person.set_y(character,int(data[current_level][2]["Y"]))
-                    current_level = next_level[2]["Down"]
-                elif player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Right":
-                    screen_load.load_level(next_level[3]["Right"],DISPLAY_SURFACE)
-                    player.Person.set_x(character,int(data[current_level][3]["X"]))
-                    player.Person.set_y(character,int(data[current_level][3]["Y"]))
-                    current_level = next_level[3]["Right"]
-                
-
         if event.type == QUIT: # vypínání hry
             pygame.quit()
             sys.exit()
-
-        
-
         if game_started == False: # ovládání tlačítek v menu
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == start_button:
@@ -134,12 +64,96 @@ while True: # tady začíná hlavní herní loop
                     pygame.quit()
                     sys.exit()
 
+    
+
+    
+    if game_started == True:    # tento kód se spustí jen když už hrajete hru (když v menu vyberete že chcete hrát)
+            key_pressed_is = pygame.key.get_pressed() #kód na ovládání hráče
+                # první 4 if jsou na úhlopříčky a ty další 4 na rovný směry
+            diagonal_speed = (move_speed*two_sqrt)/2
+            if key_pressed_is[K_w] and key_pressed_is[K_d] and not key_pressed_is[K_a] and not key_pressed_is[K_s]:
+                player.Person.move_y(character,-(diagonal_speed))
+                player.Person.move_x(character,(diagonal_speed))
+                direction = RIGHT
+                walking = True
+              
+            elif not key_pressed_is[K_w] and key_pressed_is[K_d] and not key_pressed_is[K_a] and key_pressed_is[K_s]:
+                player.Person.move_y(character,(diagonal_speed))
+                player.Person.move_x(character,(diagonal_speed))
+                direction = RIGHT
+                walking = True
+                 
+              
+            elif not key_pressed_is[K_w] and not key_pressed_is[K_d] and key_pressed_is[K_a] and key_pressed_is[K_s]:
+                player.Person.move_y(character,(diagonal_speed))
+                player.Person.move_x(character,-(diagonal_speed))
+                direction = LEFT
+                walking = True
+                 
+              
+            elif key_pressed_is[K_w] and not key_pressed_is[K_d] and key_pressed_is[K_a] and not key_pressed_is[K_s]:
+                player.Person.move_y(character,-(diagonal_speed))
+                player.Person.move_x(character,-(diagonal_speed))
+                direction = LEFT
+                walking = True
+                 
+              
+            elif key_pressed_is[K_w]:
+                player.Person.move_y(character,-move_speed)
+                walking = True
+                direction = UP
+                 
+            elif key_pressed_is[K_a]:
+                player.Person.move_x(character,-move_speed)
+                walking = True
+                direction = LEFT
+                 
+            elif key_pressed_is[K_s]:
+                player.Person.move_y(character,move_speed)
+                walking = True
+                direction = DOWN
+                 
+            elif key_pressed_is[K_d]:
+                player.Person.move_x(character,move_speed)
+                walking = True
+                direction = RIGHT
+                 
+            elif not key_pressed_is[K_d] and not key_pressed_is[K_a] and not key_pressed_is[K_s] and not key_pressed_is[K_w]:
+                walking = False
+                 
+
+            if player.Person.end_of_word(character,screen_X-16,screen_Y-16) != None: # ovládání screen wrappingu
+                js = open("levels\level_conection.json")
+                data = json.load(js)
+                next_level = data[current_level]
+                if player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Left":
+                    screen_load.load_level(next_level[RIGHT]["Left"],DISPLAY_SURFACE)
+                    player.Person.set_x(character,int(data[current_level][RIGHT]["X"]))
+                    player.Person.set_y(character,int(data[current_level][RIGHT]["Y"]))
+                    current_level = next_level[RIGHT]["Left"]
+                elif player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Up":
+                    screen_load.load_level(next_level[UP]["Up"],DISPLAY_SURFACE)
+                    player.Person.set_x(character,int(data[current_level][UP]["X"]))
+                    player.Person.set_y(character,int(data[current_level][UP]["Y"]))
+                    current_level = next_level[UP]["Up"]
+                elif player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Down":
+                    screen_load.load_level(next_level[DOWN]["Down"],DISPLAY_SURFACE)
+                    player.Person.set_x(character,int(data[current_level][DOWN]["X"]))
+                    player.Person.set_y(character,int(data[current_level][DOWN]["Y"]))
+                    current_level = next_level[DOWN]["Down"]
+                elif player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Right":
+                    screen_load.load_level(next_level[RIGHT]["Right"],DISPLAY_SURFACE)
+                    player.Person.set_x(character,int(data[current_level][RIGHT]["X"]))
+                    player.Person.set_y(character,int(data[current_level][RIGHT]["Y"]))
+                    current_level = next_level[RIGHT]["Right"]
+
     if game_started == True: # tento kód se spustí jen když už hrajete hru (když v menu vyberete že chcete hrát)
         if loaded_level != current_level:
             loaded_level = current_level
-            screen_load.load_level(current_level,DISPLAY_SURFACE) # načte texturu levelu
-        screen_load.reload_level(DISPLAY_SURFACE)
-        animation_frame = player.Person.render(character,DISPLAY_SURFACE,direction,walking,animation_frame) # načte texturu hráče
+            level_image = screen_load.load_level(current_level,DISPLAY_SURFACE) # načte texturu levelu
+        animation_frame = player.Person.render(character,DISPLAY_SURFACE,direction,walking,animation_frame,level_image) # načte texturu hráče
+        screen_load.clear_bit(DISPLAY_SURFACE,level_image,0,0,100,40) #na reloading fps counteru
+        screen_load.Render_Text(str(int(clock.get_fps()))+ " FPS",(0,0,0),(0,0),DISPLAY_SURFACE)
 
 
     if game_started == False: # tento kód ovládá menu
@@ -149,6 +163,5 @@ while True: # tady začíná hlavní herní loop
         DISPLAY_SURFACE.blit(image,(0,0))
         manager.draw_ui(DISPLAY_SURFACE)
 
-    screen_load.Render_Text(str(int(clock.get_fps())) + " fps",(255,255,255),(10,10),DISPLAY_SURFACE)
     pygame.display.update() # update obrazovky
     

@@ -1,7 +1,7 @@
 {
     "Level1": [
         {
-            "Left": "Error",
+            "Right": "Level2",
             "X": 100,
             "Y": 100
         },
@@ -11,12 +11,12 @@
             "Y": 912
         },
         {
-            "Down": "Error",
+            "Left": "Error",
             "X": 100,
             "Y": 100
         },
         {
-            "Right": "Level2",
+            "Down": "Error",
             "X": 100,
             "Y": 100
         }
@@ -24,12 +24,17 @@
 
     "Error": [
         {
-            "Left": "Error",
+            "Right": "Error",
             "X": 100,
             "Y": 100
         },
         {
             "Up": "Error",
+            "X": 100,
+            "Y": 100
+        },
+        {
+            "Left": "Error",
             "X": 100,
             "Y": 100
         },
@@ -37,16 +42,11 @@
             "Down": "Error",
             "X": 100,
             "Y": 100
-        },
-        {
-            "Right": "Error",
-            "X": 100,
-            "Y": 100
         }
     ],
     "Secret":[
         {
-            "Left": "Error",
+            "Right": "Error",
             "X": 100,
             "Y": 100
         },
@@ -56,14 +56,14 @@
             "Y": 100
         },
         {
+            "Left": "Error",
+            "X": 100,
+            "Y": 100
+        },
+        {
             "Down": "Level1",
             "X": 454,
             "Y": 32
-        },
-        {
-            "Right": "Error",
-            "X": 100,
-            "Y": 100
         }
 
 

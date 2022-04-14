@@ -12,8 +12,8 @@ UP = 1
 LEFT = 2
 DOWN = 3
 SIZE_OF_CHARACTER = 32
-CLEAN_OFFSET = 10
-CLEAN_SIZE = 50
+CLEAN_OFFSET = 15
+CLEAN_SIZE = 60
 
 
 class Person:
@@ -56,8 +56,7 @@ class Person:
         surface.blit(image, (self.last_x-CLEAN_OFFSET,self.last_y-CLEAN_OFFSET),(self.last_x-CLEAN_OFFSET,self.last_y-CLEAN_OFFSET,CLEAN_SIZE,CLEAN_SIZE))
 
 
-    def render(self,surface,direction,walking,animation_frame,image): # rendruje hráče 
-        Person.clear(self,surface,image)
+    def render(self,surface,direction,walking,animation_frame): # rendruje hráče 
         animation_frame +=1
         texture = pygame.image.load(os.path.join('Graphics\Player\Front.png')) #basic texture
         if animation_frame == MAX_ANIMATION_FRAME:

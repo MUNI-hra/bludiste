@@ -9,6 +9,11 @@ import os
 from PIL import Image
 import player
 
+RIGHT = 0
+UP = 1
+LEFT = 2
+DOWN = 3
+
 
 def load_level(level,gameDisplay): # rendruje level
     global im
@@ -21,7 +26,7 @@ def load_level(level,gameDisplay): # rendruje level
 def reload_level(gameDisplay):
     gameDisplay.blit(image_level, (0,0))
 
-def hitbox_detection(x,y):
+def hitbox_detection(x,y,facing):
     x = x/16 # tahle funkce vrát true pokud se hráč může posunout na zadanou pozici a false pokud ne
     y = y/16
     rgb_im = im.convert('RGB')
@@ -30,6 +35,14 @@ def hitbox_detection(x,y):
         return True
     elif r == 0 and g == 0 and b == 0:
         return False
+    elif r == 0 and g == 8 and b == 255 and facing == RIGHT:
+        return "Jump Right"
+    elif r == 0 and g == 255 and b == 244 and facing == DOWN:
+        return "Jump Down"
+    elif r == 53 and g == 255 and b == 0 and facing == UP:
+        return "Jump Up"
+    elif r == 255 and g == 145 and b == 0 and facing == LEFT:
+        return "Jump Left"
 
 def Render_Text(what, color, where, window):
     font = pygame.font.Font('Graphics/Fonts/Snes.ttf', 30)
@@ -39,7 +52,9 @@ def Render_Text(what, color, where, window):
 def clear_bit(surface,image,xa,ya,xb,yb):
     surface.blit(image, (xa,ya),(xa,ya,xb,yb))
 
-
+def Render_Health(self,surface,bar,pointer):
+    surface.blit(pygame.transform.scale(bar,(200,60)), (0,30))
+    surface.blit(pygame.transform.scale(pointer,(16,16)), (self.health*22+48,70))
 
 
 

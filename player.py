@@ -12,8 +12,10 @@ UP = 1
 LEFT = 2
 DOWN = 3
 SIZE_OF_CHARACTER = 32
-CLEAN_OFFSET = 15
-CLEAN_SIZE = 60
+CLEAN_OFFSET = 25
+CLEAN_SIZE = 80
+
+
 
 
 class Person:
@@ -22,16 +24,31 @@ class Person:
         self.y = 0
         self.last_x = 0
         self.last_y = 0
+        self.health = 3
 
-    def move_y(self, ya):
-        if screen_load.hitbox_detection(self.x, (self.y+ya)):  # is there a wall?
+    def move_y(self, ya,dir):
+        wall = screen_load.hitbox_detection(self.x, (self.y+ya),dir)  # is there a wall?
+        if wall == True:
             self.last_y = self.y
             self.y += ya  # moving on y
+        elif wall == "Jump Up":
+            self.last_y = self.y
+            self.y -= 88
+        elif wall == "Jump Down":
+            self.last_y = self.y
+            self.y += 48
 
-    def move_x(self, xa):
-        if screen_load.hitbox_detection((self.x + xa), self.y):  # is there a wall?
+    def move_x(self, xa,dir):
+        wall = screen_load.hitbox_detection((self.x + xa), self.y,dir)  # is there a wall?
+        if wall == True:
             self.last_x = self.x
-            self.x += xa  # moving on x
+            self.x += xa
+        elif wall == "Jump Left":
+            self.last_x = self.x
+            self.x -= 88
+        elif wall == "Jump Right":
+            self.last_x = self.x
+            self.x += 48  # moving on x
     
     def set_x(self, xpos): # nastaví x na pozici v absolutních souřadnicích
         self.x = xpos

@@ -7,6 +7,7 @@ from pygame.locals import *
 import pygame_gui
 import math
 import json
+import item
 
 UP = 1
 RIGHT = 0
@@ -15,6 +16,10 @@ DOWN = 3
 
 SWORD_ANIMATION_LENGHT = 30
 
+render_list = []
+render_list =render_list + item.start_game.start_game_definition()
+
+holding = None
 
 animation_frame = 0
 
@@ -56,13 +61,21 @@ quit_button =pygame_gui.elements.UIButton(relative_rect=pygame.Rect((screen_X/2-
 level_image = screen_load.load_level(current_level,DISPLAY_SURFACE)
 sword_texture = pygame.image.load(os.path.join("Graphics\Sword\Sword.png"))
 
+healthbar_texture = pygame.image.load(os.path.join("Graphics\Health\Bar.png"))
+healthbar_pointer_texture = pygame.image.load(os.path.join("Graphics\Health\Pointer.png"))
+
+
+def render_everything():
+    for i in render_list:
+        i.render(current_level,DISPLAY_SURFACE)
+
 
 screen_load.load_level("Level1",DISPLAY_SURFACE)
 
 while True: # tady začíná hlavní herní loop
-
-
+    screen_load.clear_bit(DISPLAY_SURFACE,level_image,0,0,200,200) #na reloading fps counteru
     player.Person.clear(character,DISPLAY_SURFACE,level_image)
+    render_everything()
     animation_frame = player.Person.render(character,DISPLAY_SURFACE,direction,walking,animation_frame) # načte texturu hráče
 
     time_delta = clock.tick(200)/1000 # časovač pro menu elementy
@@ -83,6 +96,7 @@ while True: # tady začíná hlavní herní loop
         else:
             if event.type == pygame.MOUSEBUTTONUP:
                 sword_used = True
+        
             
                 
             
@@ -110,51 +124,56 @@ while True: # tady začíná hlavní herní loop
 
         key_pressed_is = pygame.key.get_pressed() #kód na ovládání hráče
             # první 4 if jsou na úhlopříčky a ty další 4 na rovný směry
+
+        if key_pressed_is[K_e]:
+            for i in render_list:
+                i.is_touching_player(character.x,character.y,character,current_level)
+        
         diagonal_speed = (move_speed*two_sqrt)/2
         if key_pressed_is[K_w] and key_pressed_is[K_d] and not key_pressed_is[K_a] and not key_pressed_is[K_s]:
-            player.Person.move_y(character,-(diagonal_speed))
-            player.Person.move_x(character,(diagonal_speed))
+            player.Person.move_y(character,-(diagonal_speed),direction)
+            player.Person.move_x(character,(diagonal_speed),direction)
             direction = RIGHT
             walking = True
             
         elif not key_pressed_is[K_w] and key_pressed_is[K_d] and not key_pressed_is[K_a] and key_pressed_is[K_s]:
-            player.Person.move_y(character,(diagonal_speed))
-            player.Person.move_x(character,(diagonal_speed))
+            player.Person.move_y(character,(diagonal_speed),direction)
+            player.Person.move_x(character,(diagonal_speed),direction)
             direction = RIGHT
             walking = True
                 
             
         elif not key_pressed_is[K_w] and not key_pressed_is[K_d] and key_pressed_is[K_a] and key_pressed_is[K_s]:
-            player.Person.move_y(character,(diagonal_speed))
-            player.Person.move_x(character,-(diagonal_speed))
+            player.Person.move_y(character,(diagonal_speed),direction)
+            player.Person.move_x(character,-(diagonal_speed),direction)
             direction = LEFT
             walking = True
                 
             
         elif key_pressed_is[K_w] and not key_pressed_is[K_d] and key_pressed_is[K_a] and not key_pressed_is[K_s]:
-            player.Person.move_y(character,-(diagonal_speed))
-            player.Person.move_x(character,-(diagonal_speed))
+            player.Person.move_y(character,-(diagonal_speed),direction)
+            player.Person.move_x(character,-(diagonal_speed),direction)
             direction = LEFT
             walking = True
                 
             
         elif key_pressed_is[K_w]:
-            player.Person.move_y(character,-move_speed)
+            player.Person.move_y(character,-move_speed,direction)
             walking = True
             direction = UP
                 
         elif key_pressed_is[K_a]:
-            player.Person.move_x(character,-move_speed)
+            player.Person.move_x(character,-move_speed,direction)
             walking = True
             direction = LEFT
                 
         elif key_pressed_is[K_s]:
-            player.Person.move_y(character,move_speed)
+            player.Person.move_y(character,move_speed,direction)
             walking = True
             direction = DOWN
                 
         elif key_pressed_is[K_d]:
-            player.Person.move_x(character,move_speed)
+            player.Person.move_x(character,move_speed,direction)
             walking = True
             direction = RIGHT
                 
@@ -167,10 +186,10 @@ while True: # tady začíná hlavní herní loop
             data = json.load(js)
             next_level = data[current_level]
             if player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Left":
-                screen_load.load_level(next_level[RIGHT]["Left"],DISPLAY_SURFACE)
-                player.Person.set_x(character,int(data[current_level][RIGHT]["X"]))
-                player.Person.set_y(character,int(data[current_level][RIGHT]["Y"]))
-                current_level = next_level[RIGHT]["Left"]
+                screen_load.load_level(next_level[LEFT]["Left"],DISPLAY_SURFACE)
+                player.Person.set_x(character,int(data[current_level][LEFT]["X"]))
+                player.Person.set_y(character,int(data[current_level][LEFT]["Y"]))
+                current_level = next_level[LEFT]["Left"]
             elif player.Person.end_of_word(character,screen_X-16,screen_Y-16) == "Up":
                 screen_load.load_level(next_level[UP]["Up"],DISPLAY_SURFACE)
                 player.Person.set_x(character,int(data[current_level][UP]["X"]))
@@ -191,8 +210,11 @@ while True: # tady začíná hlavní herní loop
         if loaded_level != current_level:
             loaded_level = current_level
             level_image = screen_load.load_level(current_level,DISPLAY_SURFACE) # načte texturu levelu
-        screen_load.clear_bit(DISPLAY_SURFACE,level_image,0,0,100,40) #na reloading fps counteru
         screen_load.Render_Text(str(int(clock.get_fps()))+ " FPS",(0,0,0),(0,0),DISPLAY_SURFACE)
+        screen_load.Render_Health(character,DISPLAY_SURFACE,healthbar_texture,healthbar_pointer_texture)
+        #print(pygame.mouse.get_pos())
+
+
 
 
     if game_started == False: # tento kód ovládá menu

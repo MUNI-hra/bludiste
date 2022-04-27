@@ -9,17 +9,30 @@ from pygame.locals import *
 import os
 from PIL import Image,ImageOps
 from enum import Enum
+import enemy
 
 REACTION_SPACE = 24
+CLEAN_OFFSET = 2
+CLEAN_SIZE = 20
 all_items = []
+all_enemies = []
 
 class start_game(list):
 
     def start_game_definition():
+        all_items = []
+        return all_items
+
+    def enemies_definition():
+        all_enemies.append(enemy.Enemy("Level1",300,400))
+        all_enemies.append(enemy.Enemy("Level1",400,400))
+        all_enemies.append(enemy.Enemy("Level1",400,500))
+        return all_enemies
+
+    def item_definition():
         all_items.append(Item(2,300,400,"Level1")) #0 = textura, 0 = x, 0 = y, "level1" = v jakým levelu je
         all_items.append(Item(1,400,400,"Level1"))
         return all_items
-
 
 
 
@@ -78,10 +91,12 @@ class Item:
         self.y = ypos
         self.last_y = ypos
     
+    def clear(self,surface,image):
+        surface.blit(image, (self.last_x-CLEAN_OFFSET,self.last_y-CLEAN_OFFSET),(self.last_x-CLEAN_OFFSET,self.last_y-CLEAN_OFFSET,CLEAN_SIZE,CLEAN_SIZE))
+    
     def render(self,current_level,display):
         if self.lives:
             if current_level == self.current_level:
-                #print("now rendering:", self)
                 display.blit(self.texture,(self.x,self.y))
     
     

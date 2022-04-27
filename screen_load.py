@@ -21,7 +21,21 @@ def load_level(level,gameDisplay): # rendruje level
     im = Image.open('levels\Static_Hitbox' + "\\" + level + ".png" )
     image_level = pygame.image.load(os.path.join('levels\Images' + "\\" + level + ".png"))
     gameDisplay.blit(image_level, (0,0))
-    return image_level
+    return im, image_level
+
+def load_level_array(im):
+    level_array = []
+    rgb_im = im.convert('RGB')
+    for i in range(80):
+        level_array.append([])
+        for j in range(60):
+            r, g, b = rgb_im.getpixel((i, j))
+            if r == 0 and g == 0 and b == 0:
+                level_array[i].append(1)
+            else:
+                level_array[i].append(0)
+
+    return level_array
 
 def reload_level(gameDisplay):
     gameDisplay.blit(image_level, (0,0))

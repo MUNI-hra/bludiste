@@ -10,12 +10,17 @@ import os
 from PIL import Image,ImageOps
 from enum import Enum
 import enemy
+import button
+import door
+import Boss
 
 REACTION_SPACE = 24
 CLEAN_OFFSET = 2
 CLEAN_SIZE = 20
 all_items = []
 all_enemies = []
+all_buttons = []
+all_doors = []
 
 class start_game(list):
 
@@ -27,12 +32,43 @@ class start_game(list):
         all_enemies.append(enemy.Enemy("Level1",300,400))
         all_enemies.append(enemy.Enemy("Level1",400,400))
         all_enemies.append(enemy.Enemy("Level1",400,500))
+        all_enemies.append(enemy.Enemy("Level3",700,500))
+        all_enemies.append(enemy.Enemy("Level3",490,630))
+        all_enemies.append(enemy.Enemy("Level3",660,630))
         return all_enemies
 
     def item_definition():
         all_items.append(Item(2,300,400,"Level1")) #0 = textura, 0 = x, 0 = y, "level1" = v jakým levelu je
         all_items.append(Item(1,400,400,"Level1"))
+        all_items.append(Item(1,400,400,"Level2"))
+        all_items.append(Item(1,821,243,"Level3"))
+        all_items.append(Item(2,788,166,"Level3"))
+        all_items.append(Item(2,405,732,"Level2"))
+        all_items.append(Item(2,599,291,"Level3"))
+        all_items.append(Item(2,737,278,"Level3"))
+        all_items.append(Item(1,200,200,"Level8"))
+        all_items.append(Item(1,1100,200,"Level8"))
+
         return all_items
+    def button_definition():
+        all_buttons.append(button.Button(3,745,457,"Level1",1))
+        all_buttons.append(button.Button(3,681,361,"Level3",2))
+        all_buttons.append(button.Button(3,570,230,"Level3",3))
+        all_buttons.append(button.Button(3,882,226,"Level3",4))
+        all_buttons.append(button.Button(3,356,599,"Level2",5))
+
+        return all_buttons
+    def door_definition():
+        all_doors.append(door.Door(4,704,288,"Level1",1))
+        all_doors.append(door.Door(4,760,220,"Level3",2))
+        all_doors.append(door.Door(4,760,220,"Level3",3))
+        all_doors.append(door.Door(4,1236,393,"Level2",4))
+        all_doors.append(door.Door(4,1236,393,"Level2",5))
+        return all_doors
+    def boss_definition():
+        boss = Boss.Boss("Level8",500,400)
+        return boss
+
 
 
 
@@ -40,6 +76,8 @@ class item_type(Enum):
     NONE = 0
     HEAL = 1
     BOX = 2
+    BUTTON = 3
+    DOOR = 4
 
 
 class Item:

@@ -1,3 +1,4 @@
+from turtle import right
 import pygame, sys
 import screen_load
 from pygame.locals import *
@@ -8,37 +9,34 @@ import random
 import button
 
 
-MAX_ANIMATION_FRAME = 100 # kolik snímků má animace (1 snímek je 1/20 sekundy)
-END_OF_FRAME = 50
 RIGHT = 0
 UP = 1
 LEFT = 2
 DOWN = 3
-SIZE_OF_CHARACTER = 32
+SIZE_OF_CHARACTER = 16
 CLEAN_OFFSET = 2
-CLEAN_SIZE = 36
-REACTION_SPACE = 24
+CLEAN_SIZE = 20
+REACTION_SPACE = 30
 
 
 
-class Enemy:
-    def __init__(self,level,x,y):
+class Goon:
+    def __init__(self,level,x,y,dad):
         self.x = x
         self.y = y
         self.last_x = 0
         self.last_y = 0
-        self.health = random.randint(1,5)
-        self.strenght = random.randint(1,3)
-        self.iq = random.randint(5,15)
-        self.speed = random.randint(40,80)/100
-        self.texture = pygame.image.load(os.path.join('Graphics\Enemie\Front.png'))
+        self.health = 2
+        self.strenght = 3
+        self.iq = 7
+        self.speed = 2
+        self.texture = pygame.image.load(os.path.join('Graphics\Boss\Boss.png'))
         self.current_level = level
         self.pathway = []
         self.direction = RIGHT
-        self.animation_frame = 0
         self.walking = True
-        self.color = random.randint(0,36)*10
         self.died = False
+        self.daddy = dad
 
     def pathfind(self,playerx,playery,level,door_list,current_level):
         if self.health >0:
@@ -95,12 +93,18 @@ class Enemy:
     def player_interacted(self,level):
         if level == self.current_level:
             self.health -=1
+        if self.health == 0:
+            self.daddy.goon_list.remove(self)
     
     def is_touching_player(self,xplayer,yplayer,level):
         if xplayer > self.x-REACTION_SPACE and xplayer < self.x+REACTION_SPACE:
             if yplayer > self.y-REACTION_SPACE and yplayer < self.y+REACTION_SPACE:
-                Enemy.player_interacted(self,level)
+                Goon.player_interacted(self,level)
                 return self
+    
+    def attack(self,player,level):
+        self.damage(player,level)
+            
     
     def damage(self,player,level):
         if self.health > 0:
@@ -109,6 +113,7 @@ class Enemy:
                     if level == self.current_level:
                         if not player.health <= 0:
                             player.health -=self.strenght/3
+            
 
     def move_y(self, ya,dir,door_list):
         wall = screen_load.hitbox_detection(self.x, (self.y+ya),dir,door_list)  # is there a wall?
@@ -148,75 +153,13 @@ class Enemy:
 
 
     def render(self,current_level,display): # rendruje hráče 
-
+        
         if self.health > 0:
             if current_level == self.current_level:
-                self.animation_frame +=1
-                if self.animation_frame == MAX_ANIMATION_FRAME:
-                    self.animation_frame = 0
+                if self.direction == RIGHT:
+                    texture = pygame.transform.flip(pygame.image.load(os.path.join('Graphics\Boss\Boss.png')), True, False)
+                else:
+                    texture = pygame.image.load(os.path.join('Graphics\Boss\Boss.png'))
 
-    
-                if self.direction == RIGHT: # rendering player if he is facing right 
-                    if self.walking == True: # rendering animation of him walking
-                        if self.animation_frame <= END_OF_FRAME:
-                            texture = pygame.transform.flip(pygame.image.load(os.path.join('Graphics\Enemie\side_walk.png')), True, False)
-                        if self.animation_frame > END_OF_FRAME:
-                            texture = pygame.transform.flip(pygame.image.load(os.path.join('Graphics\Enemie\side.png')), True, False)
-                    if self.walking == False: #rendering Enemie if he is not moving
-                        texture = pygame.transform.flip(pygame.image.load(os.path.join('Graphics\Enemie\side.png')), True, False)
+                display.blit(pygame.transform.scale(texture,(SIZE_OF_CHARACTER,SIZE_OF_CHARACTER)), (self.x,self.y))        
 
-                elif self.direction == UP: # rendering Enemie if he is facing up
-                    if self.walking == True: # rendering animation of him walking
-                        if self.animation_frame <= END_OF_FRAME:
-                            texture = pygame.image.load(os.path.join('Graphics\Enemie\Back_walk.png'))
-                        if self.animation_frame > END_OF_FRAME:
-                            texture = pygame.transform.flip(pygame.image.load(os.path.join('Graphics\Enemie\Back_walk.png')), True, False)
-                    if self.walking == False:
-                        texture = pygame.transform.flip(pygame.image.load(os.path.join('Graphics\Enemie\Back.png')), True, False)
-
-
-
-                elif self.direction == LEFT: # rendering Enemie if he is facing left
-                    if self.walking == True: # rendering animation of him walking
-                        if self.animation_frame <= END_OF_FRAME:
-                            texture = pygame.image.load(os.path.join('Graphics\Enemie\side_walk.png'))
-                        if self.animation_frame > END_OF_FRAME:
-                            texture = pygame.image.load(os.path.join('Graphics\Enemie\side.png'))
-                    if self.walking == False: #rendering Enemie if he is not moving
-                        texture = pygame.image.load(os.path.join('Graphics\Enemie\side.png'))
-
-
-
-                elif self.direction == DOWN: # rendering Enemie if he is facing down 
-                    if self.walking == True: # rendering animation of him walking
-                        if self.animation_frame <= END_OF_FRAME:
-                            texture = pygame.transform.flip(pygame.image.load(os.path.join('Graphics\Enemie\Front_walk.png')), True, False)
-                        if self.animation_frame > END_OF_FRAME:
-                            texture = pygame.image.load(os.path.join('Graphics\Enemie\Front_walk.png'))
-                    if self.walking == False: #rendering Enemie if he is not moving
-                        texture = pygame.image.load(os.path.join('Graphics\Enemie\Front.png'))
-
-
-
-
-                display.blit(pygame.transform.scale(self.shift_color(texture),(SIZE_OF_CHARACTER,SIZE_OF_CHARACTER)), (self.x,self.y))        
-
-
-    def shift_color(self,surface):
-        # Get the pixels
-        pixels = pygame.PixelArray(surface)
-        # Iterate over every pixel                                             
-        for x in range(surface.get_width()):
-            for y in range(surface.get_height()):
-                # Turn the pixel data into an RGB tuple
-                rgb = surface.unmap_rgb(pixels[x][y])
-                # Get a new color object using the RGB tuple and convert to HSLA
-                color = Color(*rgb)
-                h, s, l, a = color.hsla
-                # Add 120 to the hue (or however much you want) and wrap to under 360
-                color.hsla = (int(h) + self.color) % 360, int(s), int(l), int(a)
-                # Assign directly to the pixel
-                pixels[x][y] = color
-        # The old way of closing a PixelArray object
-        del pixels
-        return surface

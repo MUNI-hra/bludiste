@@ -5,8 +5,8 @@ import os
 from PIL import Image,ImageOps
 
 SIZE_OF_SCREEN_BORDER = 16 # konstanta okraje obrazovky
-MAX_ANIMATION_FRAME = 100 # kolik snímků má animace (1 snímek je 1/20 sekundy)
-END_OF_FRAME = 50
+MAX_ANIMATION_FRAME = 60 # kolik snímků má animace (1 snímek je 1/20 sekundy)
+END_OF_FRAME = 30
 RIGHT = 0
 UP = 1
 LEFT = 2
@@ -24,10 +24,10 @@ class Person:
         self.y = 0
         self.last_x = 0
         self.last_y = 0
-        self.health = 3
+        self.health = 5
 
-    def move_y(self, ya,dir):
-        wall = screen_load.hitbox_detection(self.x, (self.y+ya),dir)  # is there a wall?
+    def move_y(self, ya,dir,door_list):
+        wall = screen_load.hitbox_detection(self.x, (self.y+ya),dir,door_list)  # is there a wall?
         if wall == True:
             self.last_y = self.y
             self.y += ya  # moving on y
@@ -38,8 +38,8 @@ class Person:
             self.last_y = self.y
             self.y += 48
 
-    def move_x(self, xa,dir):
-        wall = screen_load.hitbox_detection((self.x + xa), self.y,dir)  # is there a wall?
+    def move_x(self, xa,dir,door_list):
+        wall = screen_load.hitbox_detection((self.x + xa), self.y,dir,door_list)  # is there a wall?
         if wall == True:
             self.last_x = self.x
             self.x += xa
@@ -73,7 +73,8 @@ class Person:
         surface.blit(image, (self.last_x-CLEAN_OFFSET,self.last_y-CLEAN_OFFSET),(self.last_x-CLEAN_OFFSET,self.last_y-CLEAN_OFFSET,CLEAN_SIZE,CLEAN_SIZE))
 
 
-    def render(self,surface,direction,walking,animation_frame): # rendruje hráče 
+    def render(self,surface,direction,walking,animation_frame): # rendruje hráče
+
         animation_frame +=1
         texture = pygame.image.load(os.path.join('Graphics\Player\Front.png')) #basic texture
         if animation_frame == MAX_ANIMATION_FRAME:

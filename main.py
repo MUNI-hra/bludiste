@@ -9,9 +9,10 @@ import math
 import json
 import item
 import enemy
-import cProfile
 import a_star_pathfinding
-
+import button
+import door
+import goon
 
 
 UP = 1
@@ -21,15 +22,23 @@ DOWN = 3
 
 SWORD_ANIMATION_LENGHT = 30
 
+MAX_TIME_TO_NEXT_ATTACK = 200
+
 second_clock = 0
 
 render_list = []
 enemie_list = []
 item_list = []
+button_list = []
+door_list = []
+
 item_list = item_list + item.start_game.item_definition()
 enemie_list =enemie_list + item.start_game.enemies_definition()
-render_list =render_list + item.start_game.start_game_definition() + enemie_list + item_list
-
+button_list =button_list + item.start_game.button_definition()
+door_list = door_list + item.start_game.door_definition()
+boss = item.start_game.boss_definition()
+render_list =render_list + button_list + item.start_game.start_game_definition() + item_list + door_list + enemie_list
+render_list.append(boss)
 holding = None
 
 animation_frame = 0
@@ -41,7 +50,7 @@ sword_angle = 0
 screen_X = 1280 #velikosti obrazovky
 screen_Y = 960
 
-move_speed = 0.75 #rychlost chůze hráče v pixelech za krok (default je 3)
+move_speed = 1 #rychlost chůze hráče v pixelech za krok (default je 3)
 two_sqrt = math.sqrt(2)
 
 Menu_Button_Size_X = 250 #rozměry a rozložení tlačítek v menu
@@ -60,8 +69,8 @@ DISPLAY_SURFACE = pygame.display.set_mode((screen_X, screen_Y),0,32)  # need thi
 manager = pygame_gui.UIManager((screen_X, screen_Y)) #manager na ovládání menu
 pygame.display.set_caption('Hra') # 80 60 tiles na obrazovce
 character = player.Person() # objekt ve třídě hráče
-player.Person.set_x(character,30) #starting pozice hráče
-player.Person.set_y(character,470)
+player.Person.set_x(character,30) #starting pozice hráče 30
+player.Person.set_y(character,470) # 470
 pygame.key.set_repeat(1,100) # vypne auto repeat na klavesnici
 
 #Tady se definují všechny elementy starting menu:
@@ -79,14 +88,36 @@ healthbar_pointer_texture = pygame.image.load(os.path.join("Graphics\Health\Poin
 
 def render_everything():
     if game_started == True:
+        boss.pathfind(character.x,character.y,level_array,door_list,current_level)
+        
+        if boss.next_attack_tick == MAX_TIME_TO_NEXT_ATTACK:
+            boss.next_attack_tick = 0
+            boss.attack(character,current_level)
+        else:
+            boss.next_attack_tick+=1
+
+        
+
         for k in render_list:
             k.clear(DISPLAY_SURFACE,level_image)
+        for i in boss.goon_list:
+            i.clear(DISPLAY_SURFACE,level_image)
+            if second_clock == 0:
+                i.damage(character,current_level)
+            i.pathfind(character.x,character.y,level_array,door_list,current_level)
+        for i in boss.goon_list:
+            i.render(current_level,DISPLAY_SURFACE)
+        for l in button_list:
+            button.Button.pressed(l,item_list)
+        for m in door_list:
+            door.Door.open(m,button_list)
         for i in render_list:
             i.render(current_level,DISPLAY_SURFACE)
         for j in enemie_list:
             if second_clock == 0:
                 j.damage(character,current_level)
-            j.pathfind(character.x,character.y,level_array)
+            j.pathfind(character.x,character.y,level_array,door_list,current_level)
+        
 
 
 
@@ -99,8 +130,12 @@ while True: # tady začíná hlavní herní loop
     render_everything()
     animation_frame = player.Person.render(character,DISPLAY_SURFACE,direction,walking,animation_frame) # načte texturu hráče
 
-    
-            
+    if character.health <= 0:
+        print("\n\nZemřel jsi :(\n\n")
+        pygame.quit()
+        sys.exit()
+
+
     second_clock+=1
     if second_clock > 100:
         second_clock = 0
@@ -124,10 +159,11 @@ while True: # tady začíná hlavní herní loop
             if event.type == pygame.MOUSEBUTTONUP:
                 for i in enemie_list:
                     i.is_touching_player(character.x,character.y,current_level)
+                for i in boss.goon_list:
+                    i.is_touching_player(character.x,character.y,current_level)
                 sword_used = True
-                
+                boss.is_touching_player(character.x,character.y,current_level)
             
-                
             
     
     if game_started == True:    # tento kód se spustí jen když už hrajete hru (když v menu vyberete že chcete hrát)
@@ -162,49 +198,49 @@ while True: # tady začíná hlavní herní loop
         
         diagonal_speed = (move_speed*two_sqrt)/2
         if key_pressed_is[K_w] and key_pressed_is[K_d] and not key_pressed_is[K_a] and not key_pressed_is[K_s]:
-            player.Person.move_y(character,-(diagonal_speed),direction)
-            player.Person.move_x(character,(diagonal_speed),direction)
+            player.Person.move_y(character,-(diagonal_speed),direction,door_list)
+            player.Person.move_x(character,(diagonal_speed),direction,door_list)
             direction = RIGHT
             walking = True
             
         elif not key_pressed_is[K_w] and key_pressed_is[K_d] and not key_pressed_is[K_a] and key_pressed_is[K_s]:
-            player.Person.move_y(character,(diagonal_speed),direction)
-            player.Person.move_x(character,(diagonal_speed),direction)
+            player.Person.move_y(character,(diagonal_speed),direction,door_list)
+            player.Person.move_x(character,(diagonal_speed),direction,door_list)
             direction = RIGHT
             walking = True
                 
             
         elif not key_pressed_is[K_w] and not key_pressed_is[K_d] and key_pressed_is[K_a] and key_pressed_is[K_s]:
-            player.Person.move_y(character,(diagonal_speed),direction)
-            player.Person.move_x(character,-(diagonal_speed),direction)
+            player.Person.move_y(character,(diagonal_speed),direction,door_list)
+            player.Person.move_x(character,-(diagonal_speed),direction,door_list)
             direction = LEFT
             walking = True
                 
             
         elif key_pressed_is[K_w] and not key_pressed_is[K_d] and key_pressed_is[K_a] and not key_pressed_is[K_s]:
-            player.Person.move_y(character,-(diagonal_speed),direction)
-            player.Person.move_x(character,-(diagonal_speed),direction)
+            player.Person.move_y(character,-(diagonal_speed),direction,door_list)
+            player.Person.move_x(character,-(diagonal_speed),direction,door_list)
             direction = LEFT
             walking = True
                 
             
         elif key_pressed_is[K_w]:
-            player.Person.move_y(character,-move_speed,direction)
+            player.Person.move_y(character,-move_speed,direction,door_list)
             walking = True
             direction = UP
                 
         elif key_pressed_is[K_a]:
-            player.Person.move_x(character,-move_speed,direction)
+            player.Person.move_x(character,-move_speed,direction,door_list)
             walking = True
             direction = LEFT
                 
         elif key_pressed_is[K_s]:
-            player.Person.move_y(character,move_speed,direction)
+            player.Person.move_y(character,move_speed,direction,door_list)
             walking = True
             direction = DOWN
                 
         elif key_pressed_is[K_d]:
-            player.Person.move_x(character,move_speed,direction)
+            player.Person.move_x(character,move_speed,direction,door_list)
             walking = True
             direction = RIGHT
                 

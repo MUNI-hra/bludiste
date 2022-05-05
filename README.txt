@@ -1,5 +1,12 @@
 dungeon hra
 
+Ovládání
+wasd = pohyb
+e = interakce s předměty 
+levý klik = útok
+pokud umřeš nebo pokud vyhraješ hra se ti vypne a vypíše se ti to v konzoli
+
+
 aby hra fungovala musite si nainstalovat tyto knihovny:
 
 PIL -

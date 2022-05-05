@@ -1,5 +1,8 @@
 dungeon hra
 
+LICENSE
+Creative Commons Uveďte autora 3.0 Česko
+
 Ovládání
 wasd = pohyb
 e = interakce s předměty 

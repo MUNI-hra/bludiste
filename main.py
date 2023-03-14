@@ -121,7 +121,6 @@ def render_everything():
 
 
 
-
 screen_load.load_level("Level1",DISPLAY_SURFACE)
 
 while True: # tady začíná hlavní herní loop
